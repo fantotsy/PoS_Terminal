@@ -1,15 +1,14 @@
 package ua.fantotsy;
 
-import java.util.List;
-import java.util.Scanner;
-
-import com.sun.org.apache.xpath.internal.SourceTree;
 import ua.fantotsy.payment.Payment;
 import ua.fantotsy.payment.Pocket;
 import ua.fantotsy.products.Coffee;
 import ua.fantotsy.products.Juice;
 import ua.fantotsy.products.Product;
 import ua.fantotsy.products.Tea;
+
+import java.util.List;
+import java.util.Scanner;
 
 public final class Terminal {
     public final static int[] availableCoins = new int[]{1, 5, 10, 25, 50};
@@ -42,9 +41,10 @@ public final class Terminal {
             }
             printSaleInfo(sale);
             Payment payment = createPayment();
-            askForPaymentAndCheckIt(in, sale, pocket, payment);
-            printChangeInfo(payment.divideChangeIntoCoins());
-            doTransaction(pocket, payment);
+            if (askForPaymentAndCheckIt(in, sale, pocket, payment)) {
+                printChangeInfo(payment.divideChangeIntoCoins());
+                doTransaction(pocket, payment);
+            }
             command = askForCommand(in);
         }
         in.close();
@@ -71,7 +71,7 @@ public final class Terminal {
         menu.append("Your coins: ");
         List<Integer> coins = pocket.getCoins();
         for (int i = 0; i < coins.size(); i++) {
-            menu.append("" + coins.get(i) + " ");
+            menu.append("" + coins.get(i) + ",");
         }
         menu.append("\nPress '-1' to cancel last order.");
         menu.append("\nPress '0' to exit.");
@@ -126,22 +126,26 @@ public final class Terminal {
         return new Payment();
     }
 
-    private static void askForPaymentAndCheckIt(Scanner in, Sale sale, Pocket pocket, Payment payment) {
+    private static boolean askForPaymentAndCheckIt(Scanner in, Sale sale, Pocket pocket, Payment payment) {
         System.out.println("In total: " + sale.total());
-        System.out.print("Payment: ");
+        System.out.print("Payment (Press '0' to cancel order): ");
         String actualPayment = in.next();
-        while (!payment.isPaymentCorrect(sale.total(), pocket.getCoins(), actualPayment)) {
+        while (!payment.isPaymentCorrect(sale.total(), pocket.getCoins(), actualPayment) && (!actualPayment.equals("0"))) {
             System.out.println("Wrong payment! Try again.");
-            System.out.print("Payment: ");
+            System.out.print("Payment (Press '0' to cancel order): ");
             actualPayment = in.next();
         }
+        if (actualPayment.equals("0")) {
+            return false;
+        }
+        return true;
     }
 
     private static void printChangeInfo(List<Integer> change) {
         StringBuilder changeDeliveryMenu = new StringBuilder();
         changeDeliveryMenu.append("Your change: ");
         for (int i = 0; i < change.size(); i++) {
-            changeDeliveryMenu.append("" + change.get(i) + " ");
+            changeDeliveryMenu.append(change.get(i) + ",");
         }
         System.out.println(changeDeliveryMenu.toString());
     }
@@ -149,11 +153,11 @@ public final class Terminal {
     private static void doTransaction(Pocket pocket, Payment payment) {
         pocket.decreaseBalance(payment.getReceivedPayment());
         pocket.increaseBalance(payment.getChange());
+        System.out.println("\nThanks for your purchase!\n");
     }
 
     private static int askForCommand(Scanner in) {
         StringBuilder exitInfo = new StringBuilder();
-        exitInfo.append("\nThanks for your purchase!\n");
         exitInfo.append("Press '1' if you want to make another purchase;\n");
         exitInfo.append("Press '0' if you want to exit.");
         System.out.println(exitInfo);

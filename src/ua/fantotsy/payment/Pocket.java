@@ -1,8 +1,8 @@
 package ua.fantotsy.payment;
 
-import java.util.List;
-
 import ua.fantotsy.utils.Utils;
+
+import java.util.List;
 
 public class Pocket {
     private int balance;
@@ -20,13 +20,13 @@ public class Pocket {
         return balance;
     }
 
-    public void increaseBalance(int delta){
+    public void increaseBalance(int delta) {
         balance += delta;
         List<Integer> coins = getAvailableCoins(balance);
         this.coins = coins;
     }
 
-    public void decreaseBalance(int delta){
+    public void decreaseBalance(int delta) {
         balance -= delta;
         List<Integer> coins = getAvailableCoins(balance);
         this.coins = coins;
