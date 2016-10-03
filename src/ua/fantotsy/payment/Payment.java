@@ -41,6 +41,10 @@ public class Payment {
         return true;
     }
 
+    public static Payment createPayment() {
+        return new Payment();
+    }
+
     public List<Integer> divideChangeIntoCoins() {
         return Utils.divideSumIntoCoins(change);
     }

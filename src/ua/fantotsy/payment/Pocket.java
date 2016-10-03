@@ -50,6 +50,10 @@ public class Pocket {
         return result;
     }
 
+    public static Pocket createPocket(int pocketNumber) {
+        return new Pocket(pocketNumber);
+    }
+
     private List<Integer> getAvailableCoins(int balance) {
         return Utils.divideSumIntoCoins(balance);
     }

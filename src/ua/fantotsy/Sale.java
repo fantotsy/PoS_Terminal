@@ -44,7 +44,7 @@ public class Sale {
         date = new Date(System.currentTimeMillis());
     }
 
-    public void cancelLastSalesLineItem(){
+    public void cancelLastSalesLineItem() {
         salesLineItems.remove(salesLineItems.size() - 1);
     }
 
@@ -54,5 +54,15 @@ public class Sale {
             System.out.println(date);
         }
         System.out.println("Total: " + total());
+    }
+
+    public void cancelLastOrder() {
+        if (this.getSalesLineItems().size() > 0) {
+            this.cancelLastSalesLineItem();
+        }
+    }
+
+    public static Sale createSale() {
+        return new Sale();
     }
 }

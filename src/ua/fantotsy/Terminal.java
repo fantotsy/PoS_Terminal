@@ -18,13 +18,13 @@ public final class Terminal {
         Scanner in = new Scanner(System.in);
         while (command == 1) {
             int pocketNumber = askForPocketNumber(in);
-            Pocket pocket = createPocket(pocketNumber);
+            Pocket pocket = Pocket.createPocket(pocketNumber);
             printStartMenuForCertainPocket(pocket);
-            Sale sale = createSale();
+            Sale sale = Sale.createSale();
             int choice = askForNeededProduct(in);
             while (choice != 0) {
                 if (choice == -1) {
-                    cancelLastOrder(sale);
+                    sale.cancelLastOrder();
                 } else {
                     Product product;
                     if (choice == 1) {
@@ -40,7 +40,7 @@ public final class Terminal {
                 choice = askForNeededProduct(in);
             }
             printSaleInfo(sale);
-            Payment payment = createPayment();
+            Payment payment = Payment.createPayment();
             if (askForPaymentAndCheckIt(in, sale, pocket, payment)) {
                 printChangeInfo(payment.divideChangeIntoCoins());
                 doTransaction(pocket, payment);
@@ -59,10 +59,6 @@ public final class Terminal {
         return pocketNumber;
     }
 
-    private static Pocket createPocket(int pocketNumber) {
-        return new Pocket(pocketNumber);
-    }
-
     private static void printStartMenuForCertainPocket(Pocket pocket) {
         int balance = pocket.getBalance();
         StringBuilder menu = new StringBuilder();
@@ -76,10 +72,6 @@ public final class Terminal {
         menu.append("\nPress '-1' to cancel last order.");
         menu.append("\nPress '0' to exit.");
         System.out.println(menu.toString());
-    }
-
-    private static Sale createSale() {
-        return new Sale();
     }
 
     private static int askForNeededProduct(Scanner in) {
@@ -106,12 +98,6 @@ public final class Terminal {
         return quantity;
     }
 
-    private static void cancelLastOrder(Sale sale) {
-        if (sale.getSalesLineItems().size() > 0) {
-            sale.cancelLastSalesLineItem();
-        }
-    }
-
     private static void printSaleInfo(Sale sale) {
         StringBuilder saleInfo = new StringBuilder();
         List<SalesLineItem> salesLineItems = sale.getSalesLineItems();
@@ -120,10 +106,6 @@ public final class Terminal {
             saleInfo.append(salesLineItems.get(i).toString());
         }
         System.out.println(saleInfo);
-    }
-
-    private static Payment createPayment() {
-        return new Payment();
     }
 
     private static boolean askForPaymentAndCheckIt(Scanner in, Sale sale, Pocket pocket, Payment payment) {
